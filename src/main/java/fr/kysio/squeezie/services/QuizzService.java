@@ -47,4 +47,10 @@ public class QuizzService {
         return quizzMapper.quizzToQuizzDto(quizz);
     }
 
+    public QuizzDto getQuizz(Integer quizzId) {
+        Quizz quizz = quizzRepository.findById(quizzId)
+                .orElseThrow(() -> new UnknownEntityException("unknown quizz " + quizzId));
+        return quizzMapper.quizzToQuizzDto(quizz);
+    }
+
 }

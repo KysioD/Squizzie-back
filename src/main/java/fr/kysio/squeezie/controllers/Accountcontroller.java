@@ -3,10 +3,7 @@ package fr.kysio.squeezie.controllers;
 import fr.kysio.squeezie.logic.dtos.AccountDto;
 import fr.kysio.squeezie.services.AccountService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/account")
@@ -15,8 +12,13 @@ public class Accountcontroller {
 
     private final AccountService accountService;
 
+    @GetMapping("/{username}")
+    public AccountDto getAccount(@PathVariable String username) {
+        return accountService.getAccount(username);
+    }
+
     @PostMapping("/")
-    public AccountDto createAccoutn(@RequestBody AccountDto request) {
+    public AccountDto createAccount(@RequestBody AccountDto request) {
         return accountService.createAccount(request);
     }
 

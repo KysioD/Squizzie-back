@@ -14,6 +14,11 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
 
+    public AccountDto getAccount(String username) {
+        Account account = accountRepository.findByUsername(username).orElseThrow();
+        return accountMapper.accountToAccountDto(account);
+    }
+
     public AccountDto createAccount(AccountDto request) {
         Account account = accountMapper.accountDtoToAccount(request);
         account = accountRepository.save(account);

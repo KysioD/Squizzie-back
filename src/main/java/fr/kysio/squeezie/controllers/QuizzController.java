@@ -15,6 +15,11 @@ public class QuizzController {
 
     private final QuizzService quizzService;
 
+    @GetMapping("/{quizzId}")
+    public QuizzDto getQuizz(@PathVariable Integer quizzId) {
+        return quizzService.getQuizz(quizzId);
+    }
+
     @GetMapping("/")
     public List<QuizzDto> getQuizzs() {
         return quizzService.getQuizzs();
