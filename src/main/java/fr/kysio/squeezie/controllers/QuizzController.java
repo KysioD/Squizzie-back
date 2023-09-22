@@ -3,7 +3,6 @@ package fr.kysio.squeezie.controllers;
 import fr.kysio.squeezie.logic.dtos.QuizzDto;
 import fr.kysio.squeezie.services.QuizzService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

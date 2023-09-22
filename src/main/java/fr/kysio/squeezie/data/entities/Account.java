@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "account")
 @Getter
@@ -17,5 +20,6 @@ public class Account {
     private String username;
 //    private String email;
 //    private String password;
+    private LocalDateTime registrationDate;
 
 }
