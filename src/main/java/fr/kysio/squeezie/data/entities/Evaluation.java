@@ -16,9 +16,9 @@ public class Evaluation {
     private Integer idEvaluation;
     private Integer stars;
     @JoinColumn(name = "id_quizz")
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Quizz quizz;
     @JoinColumn(name = "id_account")
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Account account;
 }

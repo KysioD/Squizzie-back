@@ -1,6 +1,7 @@
 package fr.kysio.squeezie.controllers;
 
 import fr.kysio.squeezie.logic.dtos.QuestionDto;
+import fr.kysio.squeezie.logic.dtos.QuestionLightDto;
 import fr.kysio.squeezie.services.QuestionsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,7 @@ public class QuestionController {
     private final QuestionsService questionsService;
 
     @GetMapping("/next/{quizzId}/{username}")
-    public QuestionDto getNextQuestion(@PathVariable Integer quizzId, @PathVariable String username) {
+    public QuestionLightDto getNextQuestion(@PathVariable Integer quizzId, @PathVariable String username) {
         return questionsService.getNextQuestion(quizzId, username);
     }
 
