@@ -2,6 +2,7 @@ package fr.kysio.squeezie.services;
 
 import fr.kysio.squeezie.data.entities.Account;
 import fr.kysio.squeezie.data.repositories.AccountRepository;
+import fr.kysio.squeezie.exceptions.UnknownEntityException;
 import fr.kysio.squeezie.logic.dtos.AccountDto;
 import fr.kysio.squeezie.logic.mappers.AccountMapper;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,8 @@ public class AccountService {
     private final AccountMapper accountMapper;
 
     public AccountDto getAccount(String username) {
-        Account account = accountRepository.findByUsername(username).orElseThrow();
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new UnknownEntityException("unknown account " + username));
         return accountMapper.accountToAccountDto(account);
     }
 

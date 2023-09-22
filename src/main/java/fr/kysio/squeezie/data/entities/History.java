@@ -18,7 +18,7 @@ public class History {
     @Column(name = "id_history")
     private Integer idHistory;
     private LocalDateTime dateQuizz;
-    private Integer score;
+    private Float score;
     @JoinColumn(name = "id_quizz")
     @OneToOne(fetch = FetchType.LAZY)
     private Quizz quizz;

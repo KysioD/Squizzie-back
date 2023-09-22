@@ -17,5 +17,4 @@ public interface AnswersRepository extends CrudRepository<Answer, Integer> {
 
     @Query("SELECT a FROM Answer a WHERE a.account.username = :username and a.question.idQuestion = :questionId")
     Optional<Answer> findByUsernameAndQuestionId(@Param("username") final String username, @Param("questionId") final int questionId);
-
 }

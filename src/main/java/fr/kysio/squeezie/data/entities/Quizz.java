@@ -19,7 +19,7 @@ public class Quizz {
     private String title;
     private String description;
     @JoinColumn(name = "id_account")
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Account author;
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "quizz_question",

@@ -1,11 +1,8 @@
 package fr.kysio.squeezie.services;
 
-import fr.kysio.squeezie.data.entities.Account;
-import fr.kysio.squeezie.data.entities.Question;
-import fr.kysio.squeezie.data.entities.Quizz;
-import fr.kysio.squeezie.data.repositories.AccountRepository;
-import fr.kysio.squeezie.data.repositories.QuestionRepository;
-import fr.kysio.squeezie.data.repositories.QuizzRepository;
+import fr.kysio.squeezie.data.entities.*;
+import fr.kysio.squeezie.data.repositories.*;
+import fr.kysio.squeezie.exceptions.BadRequestException;
 import fr.kysio.squeezie.exceptions.UnknownEntityException;
 import fr.kysio.squeezie.logic.dtos.QuizzDto;
 import fr.kysio.squeezie.logic.mappers.QuizzMapper;
@@ -13,8 +10,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,8 +22,9 @@ public class QuizzService {
     private final QuizzRepository quizzRepository;
     private final AccountRepository accountRepository;
     private final QuizzMapper quizzMapper;
-    private final AnswersService answersService;
     private final QuestionRepository questionRepository;
+    private final HistoryRepository historyRepository;
+    private final AnswersRepository answersRepository;
 
     public List<QuizzDto> getQuizzs() {
         return quizzRepository.findAll().stream()
@@ -59,18 +57,51 @@ public class QuizzService {
     public Float getResultPercentage(Integer quizzId, String username) {
         final Quizz quizz = quizzRepository.findById(quizzId)
                 .orElseThrow(() -> new UnknownEntityException("unknown quizz " + quizzId));
-        System.out.println("answers : " + answersService.listUserAnswersByQuiz(username, quizzId));
-        System.out.println("answers : " + answersService.listUserAnswersByQuiz(username, quizzId).size());
-        Long result = answersService.listUserAnswersByQuiz(username, quizzId).stream()
+        final List<Answer> answers = answersRepository.findAllByUsernameAndQuizz(username, quizzId);
+
+        if (answers.size() != quizz.getQuestions().size()) {
+            throw new BadRequestException("not all questions have been answered");
+        }
+
+        Long result = answers.stream()
                 .filter(answerDto ->
-                        answerDto.response().booleanValue() ==
+                        answerDto.getResponse().booleanValue() ==
                                 questionRepository
-                                        .findById(answerDto.idQuestion())
-                                        .orElseThrow(() -> new UnknownEntityException("unknown question " + answerDto.idQuestion()))
+                                        .findById(answerDto.getQuestion().getIdQuestion())
+                                        .orElseThrow(() -> new UnknownEntityException("unknown question " + answerDto.getQuestion().getIdQuestion()))
                                         .getCorrect().booleanValue())
                 .count();
 
-        return ((float) result) / quizz.getQuestions().size() * 100;
+        final float score = ((float) result) / quizz.getQuestions().size() * 100;
+
+        History history = new History();
+        history.setQuizz(quizz);
+        history.setDateQuizz(LocalDateTime.now());
+        history.setScore(score);
+        history.setAccount(accountRepository.findByUsername(username)
+                .orElseThrow(() -> new UnknownEntityException("unknown account " + username)));
+        historyRepository.save(history);
+
+        // Clear existing answers
+        answers.forEach(answersRepository::delete);
+
+        return score;
+    }
+
+    public Float getGlobalScore(Integer quizzId) {
+        final Quizz quizz = quizzRepository.findById(quizzId)
+                .orElseThrow(() -> new UnknownEntityException("unknown quizz " + quizzId));
+        final List<History> histories = historyRepository.findAllByQuizzId(quizz.getIdQuizz());
+
+        if (histories.isEmpty()) {
+            return 0f;
+        }
+
+        // Return percentage
+        return histories.stream()
+                .map(History::getScore)
+                .reduce(Float::sum)
+                .orElse(0f) / histories.size();
     }
 
 }
