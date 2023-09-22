@@ -1,4 +1,3 @@
 package fr.kysio.squeezie.logic.dtos;
 
-public class EvaluationDto {
-}
+public record EvaluationDto(Integer id, Integer stars, Integer quizzId, String username) {}
