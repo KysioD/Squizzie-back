@@ -1,9 +1,11 @@
 package fr.kysio.squeezie.exceptions;
 
-public class UnknownEntityException extends RuntimeException{
+import org.springframework.http.HttpStatus;
+
+public class UnknownEntityException extends ApplicationException{
 
     public UnknownEntityException(String message) {
-        super(message);
+        super("NOT_FOUND", message, HttpStatus.NOT_FOUND);
     }
 
 }

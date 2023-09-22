@@ -1,7 +1,9 @@
 package fr.kysio.squeezie.exceptions;
 
-public class BadRequestException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class BadRequestException extends ApplicationException {
     public BadRequestException(String message) {
-        super(message);
+        super("BAD_REQUEST", message, HttpStatus.BAD_REQUEST);
     }
 }
