@@ -29,4 +29,9 @@ public class QuizzController {
         return quizzService.createQuizz(request);
     }
 
+    @GetMapping("/{quizzId}/{username}/result")
+    public Float getResult(@PathVariable Integer quizzId, @PathVariable String username) {
+        return quizzService.getResultPercentage(quizzId, username);
+    }
+
 }

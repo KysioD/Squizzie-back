@@ -6,6 +6,7 @@ import fr.kysio.squeezie.data.entities.Question;
 import fr.kysio.squeezie.data.repositories.AccountRepository;
 import fr.kysio.squeezie.data.repositories.AnswersRepository;
 import fr.kysio.squeezie.data.repositories.QuestionRepository;
+import fr.kysio.squeezie.exceptions.BadRequestException;
 import fr.kysio.squeezie.exceptions.UnknownEntityException;
 import fr.kysio.squeezie.logic.dtos.AccountDto;
 import fr.kysio.squeezie.logic.dtos.AnswerDto;
@@ -13,6 +14,7 @@ import fr.kysio.squeezie.logic.mappers.AnswerMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,7 +32,11 @@ public class AnswersService {
                 .toList();
     }
 
-    public AnswerDto answerQuestion(AnswerDto answerDto) {
+    public Boolean answerQuestion(AnswerDto answerDto) {
+        if (answersRepository.findByUsernameAndQuestionId(answerDto.username(), answerDto.idQuestion()).isPresent()) {
+            throw new BadRequestException("question already answered");
+        }
+
         final Account account = accountRepository.findByUsername(answerDto.username())
                 .orElseThrow(() -> new UnknownEntityException("unknown account " + answerDto.username()));
 
@@ -40,10 +46,11 @@ public class AnswersService {
         Answer answer = answerMapper.answerDtoToAnswer(answerDto);
         answer.setAccount(account);
         answer.setQuestion(question);
+        answer.setAnswerDate(LocalDateTime.now());
 
-        answer = answersRepository.save(answer);
+        answersRepository.save(answer);
 
-        return answerMapper.answerToAnswerDto(answer);
+        return question.getCorrect().booleanValue() == answerDto.response().booleanValue();
     }
 
 }

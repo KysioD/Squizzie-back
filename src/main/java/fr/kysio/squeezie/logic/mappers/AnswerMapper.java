@@ -12,7 +12,7 @@ public interface AnswerMapper {
 
     @Mapping(target = "id", source = "idAnswer")
     @Mapping(target = "idQuestion", source = "question.idQuestion")
-    @Mapping(target = "username", source = "user.username")
+    @Mapping(target = "username", source = "account.username")
     AnswerDto answerToAnswerDto(Answer answer);
 
     @InheritInverseConfiguration

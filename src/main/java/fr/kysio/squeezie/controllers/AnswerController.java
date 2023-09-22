@@ -15,8 +15,8 @@ public class AnswerController {
     private final AnswersService answersService;
 
     @PostMapping("/")
-    public void answerQuestion(@RequestBody AnswerDto request) {
-        answersService.answerQuestion(request);
+    public Boolean answerQuestion(@RequestBody AnswerDto request) {
+        return answersService.answerQuestion(request);
     }
 
     @GetMapping("/{quizzId}/{username}")

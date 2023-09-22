@@ -19,7 +19,7 @@ public class QuestionsService {
     private final AnswersService answersService;
 
     public QuestionDto getNextQuestion(Integer quizId, String username) {
-        final List<AnswerDto> userAnswers = answersService.listUserAnswers(username);
+        final List<AnswerDto> userAnswers = answersService.listUserAnswersByQuiz(username, quizId);
         final List<QuestionDto> questions = questionRepository.findAllByQuizzId(quizId).stream()
                 .map(questionMapper::questionToQuestionDto)
                 .toList();

@@ -4,6 +4,7 @@ import fr.kysio.squeezie.data.entities.Account;
 import fr.kysio.squeezie.data.entities.Question;
 import fr.kysio.squeezie.data.entities.Quizz;
 import fr.kysio.squeezie.data.repositories.AccountRepository;
+import fr.kysio.squeezie.data.repositories.QuestionRepository;
 import fr.kysio.squeezie.data.repositories.QuizzRepository;
 import fr.kysio.squeezie.exceptions.UnknownEntityException;
 import fr.kysio.squeezie.logic.dtos.QuizzDto;
@@ -24,6 +25,8 @@ public class QuizzService {
     private final QuizzRepository quizzRepository;
     private final AccountRepository accountRepository;
     private final QuizzMapper quizzMapper;
+    private final AnswersService answersService;
+    private final QuestionRepository questionRepository;
 
     public List<QuizzDto> getQuizzs() {
         return quizzRepository.findAll().stream()
@@ -51,6 +54,23 @@ public class QuizzService {
         Quizz quizz = quizzRepository.findById(quizzId)
                 .orElseThrow(() -> new UnknownEntityException("unknown quizz " + quizzId));
         return quizzMapper.quizzToQuizzDto(quizz);
+    }
+
+    public Float getResultPercentage(Integer quizzId, String username) {
+        final Quizz quizz = quizzRepository.findById(quizzId)
+                .orElseThrow(() -> new UnknownEntityException("unknown quizz " + quizzId));
+        System.out.println("answers : " + answersService.listUserAnswersByQuiz(username, quizzId));
+        System.out.println("answers : " + answersService.listUserAnswersByQuiz(username, quizzId).size());
+        Long result = answersService.listUserAnswersByQuiz(username, quizzId).stream()
+                .filter(answerDto ->
+                        answerDto.response().booleanValue() ==
+                                questionRepository
+                                        .findById(answerDto.idQuestion())
+                                        .orElseThrow(() -> new UnknownEntityException("unknown question " + answerDto.idQuestion()))
+                                        .getCorrect().booleanValue())
+                .count();
+
+        return ((float) result) / quizz.getQuestions().size() * 100;
     }
 
 }
