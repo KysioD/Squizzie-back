@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface AnswersRepository extends CrudRepository<Answer, Integer> {
 
-    @Query("SELECT a FROM Answer a WHERE a.account.username = :username")
-    List<Answer> findAllByUsername(@Param("username") final String username);
+    @Query("SELECT a FROM Answer a WHERE a.account.username = :username and a.question.quizz.idQuizz = :quizzId")
+    List<Answer> findAllByUsernameAndQuizz(@Param("username") final String username, @Param("quizzId") final int quizzId);
 
 }
