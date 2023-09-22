@@ -25,7 +25,7 @@ public class AnswersService {
     private final QuestionRepository questionRepository;
 
     public List<AnswerDto> listUserAnswersByQuiz(String username, Integer quizzId) {
-        return answersRepository.findAllByUsername(username).stream()
+        return answersRepository.findAllByUsernameAndQuizz(username, quizzId).stream()
                 .map(answerMapper::answerToAnswerDto)
                 .toList();
     }
